@@ -4,11 +4,8 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// بيانات تطبيق تيك توك الخاصة بك
 const CLIENT_KEY = 'sbawz3s6ovvz0rm40u';
 const CLIENT_SECRET = 'OqTaIO7tGzvF93evV29K9mfC7wZ2KZu1';
-
-// الرابط الجديد والصحيح لسيرفر راندر الخاص بك
 const REDIRECT_URI = 'https://tektok-oyqt.onrender.com';
 
 app.get('/', async (req, res) => {
@@ -19,7 +16,6 @@ app.get('/', async (req, res) => {
     }
 
     try {
-        // الخطوة الأهم: تبديل الـ code بـ access_token باستخدام الـ Client Secret في السيرفر بأمان
         const response = await axios.post('https://open.tiktokapis.com/v2/oauth/token/', new URLSearchParams({
             client_key: CLIENT_KEY,
             client_secret: CLIENT_SECRET,
@@ -33,13 +29,13 @@ app.get('/', async (req, res) => {
         });
 
         const accessToken = response.data.data.access_token;
-        
-        // إرسال التوكن مباشرة للعميل أو عرضه مؤقتاً لتتأكد منه
         res.send(`<h1>Success!</h1><p>Access Token: ${accessToken}</p>`);
 
     } catch (error) {
-        console.error(error.response ? error.response.data : error.message);
-        res.status(500).send('Failed to exchange token with TikTok.');
+        // طباعة تفاصيل الخطأ القادمة من تيك توك مباشرة على الشاشة لنعرف السبب بدقة
+        const errorDetails = error.response ? JSON.stringify(error.response.data) : error.message;
+        console.error("TikTok Error:", errorDetails);
+        res.status(500).send(`<h1>Failed to exchange token with TikTok</h1><pre>${errorDetails}</pre>`);
     }
 });
 
