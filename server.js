@@ -28,14 +28,21 @@ app.get('/', async (req, res) => {
             }
         });
 
-        const accessToken = response.data.data.access_token;
-        res.send(`<h1>Success!</h1><p>Access Token: ${accessToken}</p>`);
+        // سنقوم بعرض الرد الكامل من تيك توك على الشاشة لنرى أين يوجد الـ access_token بالضبط
+        const responseDataString = JSON.stringify(response.data, null, 2);
+        
+        // محاولة استخراج الـ token بأكثر من احتمال لتجنب الخطأ
+        const token = response.data.access_token || (response.data.data && response.data.data.access_token);
+
+        if (!token) {
+            return res.send(`<h1>TikTok Response Structure:</h1><pre>${responseDataString}</pre>`);
+        }
+
+        res.send(`<h1>Success!</h1><p>Access Token: ${token}</p><pre>${responseDataString}</pre>');
 
     } catch (error) {
-        // طباعة تفاصيل الخطأ القادمة من تيك توك مباشرة على الشاشة لنعرف السبب بدقة
-        const errorDetails = error.response ? JSON.stringify(error.response.data) : error.message;
-        console.error("TikTok Error:", errorDetails);
-        res.status(500).send(`<h1>Failed to exchange token with TikTok</h1><pre>${errorDetails}</pre>`);
+        const errorDetails = error.response ? JSON.stringify(error.response.data, null, 2) : error.message;
+        res.status(500).send(`<h1>TikTok API Error</h1><pre>${errorDetails}</pre>`);
     }
 });
 
