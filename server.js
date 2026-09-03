@@ -28,17 +28,14 @@ app.get('/', async (req, res) => {
             }
         });
 
-        // سنقوم بعرض الرد الكامل من تيك توك على الشاشة لنرى أين يوجد الـ access_token بالضبط
         const responseDataString = JSON.stringify(response.data, null, 2);
-        
-        // محاولة استخراج الـ token بأكثر من احتمال لتجنب الخطأ
         const token = response.data.access_token || (response.data.data && response.data.data.access_token);
 
         if (!token) {
             return res.send(`<h1>TikTok Response Structure:</h1><pre>${responseDataString}</pre>`);
         }
 
-        res.send(`<h1>Success!</h1><p>Access Token: ${token}</p><pre>${responseDataString}</pre>');
+        res.send(`<h1>Success!</h1><p>Access Token: ${token}</p><pre>${responseDataString}</pre>`);
 
     } catch (error) {
         const errorDetails = error.response ? JSON.stringify(error.response.data, null, 2) : error.message;
