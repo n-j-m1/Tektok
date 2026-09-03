@@ -7,7 +7,9 @@ const PORT = process.env.PORT || 3000;
 // بيانات تطبيق تيك توك الخاصة بك
 const CLIENT_KEY = 'sbawz3s6ovvz0rm40u';
 const CLIENT_SECRET = 'OqTaIO7tGzvF93evV29K9mfC7wZ2KZu1';
-const REDIRECT_URI = 'https://tektok-jygn.onrender.com';
+
+// الرابط الجديد والصحيح لسيرفر راندر الخاص بك
+const REDIRECT_URI = 'https://tektok-oyqt.onrender.com';
 
 app.get('/', async (req, res) => {
     const authCode = req.query.code;
