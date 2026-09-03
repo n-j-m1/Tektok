@@ -28,14 +28,32 @@ app.get('/', async (req, res) => {
             }
         });
 
-        const responseDataString = JSON.stringify(response.data, null, 2);
         const token = response.data.access_token || (response.data.data && response.data.data.access_token);
 
         if (!token) {
+            const responseDataString = JSON.stringify(response.data, null, 2);
             return res.send(`<h1>TikTok Response Structure:</h1><pre>${responseDataString}</pre>`);
         }
 
-        res.send(`<h1>Success!</h1><p>Access Token: ${token}</p><pre>${responseDataString}</pre>`);
+        // إعادة توجيه المستخدم تلقائياً لتطبيق الأندرويد مع إرسال الـ Token والـ Open ID
+        const openId = response.data.open_id || (response.data.data && response.data.data.open_id) || '';
+        const deepLinkUrl = `com.nejm.tiktok://oauth?access_token=${token}&open_id=${openId}`;
+
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Redirecting...</title>
+                <meta http-equiv="refresh" content="0;url=${deepLinkUrl}">
+            </head>
+            <body style="font-family: Arial; text-align: center; padding-top: 50px;">
+                <h2>✅ تم تسجيل الدخول بنجاح!</h2>
+                <p>جاري تحويلك إلى تطبيق نجم الإبداع...</p>
+                <p><a href="${deepLinkUrl}">اضغط هنا إذا لم يتم تحويلك تلقائياً</a></p>
+            </body>
+            </html>
+        `);
 
     } catch (error) {
         const errorDetails = error.response ? JSON.stringify(error.response.data, null, 2) : error.message;
