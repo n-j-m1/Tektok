@@ -61,6 +61,39 @@ app.get('/', async (req, res) => {
     }
 });
 
+// إضافة نقطة نهاية للنبض (Heartbeat)
+app.get('/ping', (req, res) => {
+    res.send('pong');
+});
+
+// إعداد النبض التلقائي كل 10 دقائق (600000 مللي ثانية)
+function startHeartbeat() {
+    setInterval(async () => {
+        try {
+            // طلب إلى نفس السيرفر للتأكد من أنه لا يزال نشطاً
+            await axios.get(`${REDIRECT_URI}/ping`, { timeout: 5000 });
+            console.log('✅ Heartbeat sent - Server is alive');
+        } catch (error) {
+            console.error('❌ Heartbeat failed:', error.message);
+        }
+    }, 600000); // 600000 مللي ثانية = 10 دقائق
+    
+    console.log('🚀 Heartbeat started - will ping every 10 minutes');
+}
+
+// بدء النبض عند تشغيل السيرفر
+startHeartbeat();
+
+// إضافة نقطة نهاية للتحقق من الحالة العامة
+app.get('/status', (req, res) => {
+    res.json({
+        status: 'ok',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`Server URL: ${REDIRECT_URI}`);
 });
